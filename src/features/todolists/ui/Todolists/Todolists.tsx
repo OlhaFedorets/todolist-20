@@ -8,6 +8,12 @@ import { TodolistItem } from "./TodolistItem/TodolistItem"
 
 export const Todolists = () => {
   const { data: todolists, isLoading } = useGetTodolistsQuery()
+  // const { data: todolists, isLoading } = useGetTodolistsQuery(undefined, {refetchOnFocus: true})
+  // const { data: todolists, isLoading } = useGetTodolistsQuery(undefined, {refetchOnReconnect: true})
+  // const { data: todolists, isLoading } = useGetTodolistsQuery(undefined, {
+  //   pollingInterval: 3000,
+  //   skipPollingIfUnfocused: true,
+  // })
 
   if (isLoading) {
     return (
