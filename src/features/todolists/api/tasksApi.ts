@@ -55,25 +55,35 @@ export const tasksApi = baseApi.injectEndpoints({
             // invalidatesTags: ["Task"],
             // invalidatesTags: (_result, _error, { taskId }) => [{ type: 'Task', id: taskId }],
             invalidatesTags: (_result, _error, {todolistId}) => [{type: 'Task', id: todolistId}],
-            onQueryStarted: async ({todolistId, taskId, model}, {dispatch, queryFulfilled}) => {
-                const patchResult = dispatch(
-                    tasksApi.util.updateQueryData("getTasks", { todolistId, params: { page: 1 }}, (state) => {
-                        const index = state.items.findIndex(task => task.id === taskId)
-                        if (index !== -1) {
-                            state.items[index] = {...state.items[index], ...model}
-                        }
-                    }),
-                )
+            onQueryStarted: async ({todolistId, taskId, model}, {dispatch, queryFulfilled, getState}) => {
+                const cachedArgsForQuery  = tasksApi.util.selectCachedArgsForQuery(getState(), 'getTasks')
+
+                let patchResults: any[] = []
+                cachedArgsForQuery.forEach(( arg ) => {
+                    patchResults.push(
+                        dispatch(
+                            tasksApi.util.updateQueryData(
+                                'getTasks',
+                                { todolistId, params: { page: arg.params.page } },
+                                state => {
+                                    const index = state.items.findIndex(task => task.id === taskId)
+                                    if (index !== -1) {
+                                        state.items[index] = { ...state.items[index], ...model }
+                                    }
+                                }
+                            )
+                        )
+                    )
+                })
                 try {
                     await queryFulfilled
                 } catch (error) {
-                    patchResult.undo()
+                    patchResults.forEach(patchResult => patchResult.undo())
                 }
             }
         }),
     }),
 })
-
 export const {useGetTasksQuery, useAddTaskMutation, useRemoveTaskMutation, useUpdateTaskMutation} = tasksApi
 
 export const _tasksApi = {
