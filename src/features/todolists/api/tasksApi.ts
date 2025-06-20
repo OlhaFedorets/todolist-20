@@ -1,6 +1,6 @@
 import {baseApi} from "@/app/baseApi"
 import type {BaseResponse} from "@/common/types"
-import type {DomainTask, GetTasksResponse, UpdateTaskModel} from "./tasksApi.types"
+import {DomainTask, GetTasksResponse, getTasksSchema, UpdateTaskModel} from "./tasksApi.types"
 import {PAGE_SIZE} from "@/common/constants";
 
 export const tasksApi = baseApi.injectEndpoints({
@@ -21,6 +21,7 @@ export const tasksApi = baseApi.injectEndpoints({
                 url: `todo-lists/${todolistId}/tasks`,
                 params: {...params, count: PAGE_SIZE}
             }),
+            extraOptions: {dataSchema: getTasksSchema},
             keepUnusedDataFor: 5,
             providesTags: (_result, _error, {todolistId}) => ([{type: 'Task', id: todolistId}])
         }),
