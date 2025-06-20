@@ -1,7 +1,7 @@
 import {baseApi} from "@/app/baseApi"
 import type {BaseResponse} from "@/common/types"
 import type {DomainTodolist} from "@/features/todolists/lib/types"
-import type {Todolist} from "./todolistsApi.types"
+import {Todolist, TodolistSchema} from "./todolistsApi.types"
 
 export const todolistsApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
@@ -9,6 +9,7 @@ export const todolistsApi = baseApi.injectEndpoints({
             query: () => "todo-lists",
             transformResponse: (todolists: Todolist[]): DomainTodolist[] =>
                 todolists.map((todolist) => ({...todolist, filter: "all", entityStatus: "idle"})),
+            extraOptions: {dataSchema: TodolistSchema.array()},
             providesTags: ["Todolist"],
         }),
         addTodolist: build.mutation<BaseResponse<{ item: Todolist }>, string>({
