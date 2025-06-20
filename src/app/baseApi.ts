@@ -1,11 +1,12 @@
 import { AUTH_TOKEN } from "@/common/constants"
 import { handleError } from "@/common/utils"
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import {baseQueryWithZodValidation} from "@/common/utils/baseQueryWithZodValidation.ts";
 
 export const baseApi = createApi({
   reducerPath: "todolistsApi",
   tagTypes: ["Todolist", "Task"],
-  baseQuery: async (args, api, extraOptions) => {
+  baseQuery: baseQueryWithZodValidation(async (args, api, extraOptions) => {
     const result = await fetchBaseQuery({
       baseUrl: import.meta.env.VITE_BASE_URL,
       credentials: 'include',
@@ -18,7 +19,7 @@ export const baseApi = createApi({
     handleError(api, result)
 
     return result
-  },
+  }),
   endpoints: () => ({}),
   // keepUnusedDataFor: 5,
   refetchOnFocus: true,
